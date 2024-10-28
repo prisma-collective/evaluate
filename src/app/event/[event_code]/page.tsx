@@ -14,11 +14,6 @@ interface TimelineEntry {
     event_code: string; // Foreign key to reference the Event
 }
 
-// Define the event timeline interface
-interface EventTimeline {
-    entries: TimelineEntry[]; // Array of timeline entries
-}
-
 // Define the expected shape of params
 interface Params {
     event_code: string;
@@ -75,7 +70,9 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
                         <li key={entry.id}>
                             <h2>{entry.type}</h2>
                             <p>{entry.text}</p>
-                            <img src={entry.mediaUrl} alt={entry.preview} />
+                            {entry.mediaUrl ? ( // Conditional rendering for the image
+                                <img src={entry.mediaUrl} alt={entry.preview} />
+                            ) : null} {/* Render nothing if mediaUrl is not available */}
                             <p>Created at: {entry.createdAt.toString()}</p>
                         </li>
                     ))}
