@@ -9,17 +9,31 @@ export default function Home() {
 
   const router = useRouter(); // Initialise the router
 
-  const [event_id, setEventId] = useState<string>(""); // Ensure type is specified
+  const [event_code, setEventCode] = useState<string>(""); // Ensure type is specified
 
-  const handleSubmit = (event_id: string) => {
-    // Validate the event ID
-    if (event_id.trim() !== "atreyu-barcelona") {
-      alert("Please enter a valid event ID."); // Alert for invalid input
-      return; // Exit the function if invalid
-    }
+  const handleSubmit = async (event_code: string) => {
+      if (!event_code.trim()) {
+          alert("Please enter an event code.");
+          return;
+      }
 
-    router.push(`/event/${event_id}`); // Navigate to the general event page with the event ID
-  }
+      try {
+          const response = await fetch(`/api/event?event_code=${encodeURIComponent(event_code.trim())}`, {
+              method: 'GET',
+          });
+
+          const data = await response.json();
+
+          if (data.valid) {
+              router.push(`/event/${event_code}`);
+          } else {
+              alert("Event code not found. Please enter a valid event code.");
+          }
+      } catch (error) {
+          console.error("Error validating event ID:", error);
+          alert("There was an issue validating the event ID. Please try again later.");
+      }
+  };
 
   return (
     <div className="h-screen relative">
@@ -51,16 +65,16 @@ export default function Home() {
               </p>
               <form onSubmit={(e) => {
                 e.preventDefault(); // Prevent the default form submission
-                handleSubmit(event_id); // Call handleSubmit with the event ID
+                handleSubmit(event_code); // Call handleSubmit with the event ID
               }}>
                 <input
                   type="text"
-                  id="event_id"
-                  name="event_id"
+                  id="event_code"
+                  name="event_code"
                   placeholder="Event code"
                   className="border border-gray-800 p-2 rounded text-center text-gray-800 w-80"
-                  value={event_id} // Bind the input value to state
-                  onChange={(e) => setEventId(e.target.value)} // Update state on change
+                  value={event_code} // Bind the input value to state
+                  onChange={(e) => setEventCode(e.target.value)} // Update state on change
                   autoComplete="off" // Prevent browser from auto-filling
                 />
               </form>

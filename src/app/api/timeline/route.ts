@@ -1,45 +1,31 @@
-// src/app/api/timeline/route.js
-import { PrismaClient } from '@prisma/client';
-import { VercelBlobStorage } from '@vercel/blob-storage';
+// src/app/api/timeline/route.ts
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/db'; // Adjust the import based on your db setup
 
-const prisma = new PrismaClient();
-const blobStorage = new VercelBlobStorage();
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url); // Get the URL object from the request
+    const event_code = searchParams.get('event_code'); // Extract the event_id from the query parameters
 
-export async function POST(req) {
+    console.log('Received event_code:', event_code); // Log the received event_code
+
+    if (!event_code) {
+        return NextResponse.json({ error: 'Event code required' }, { status: 400 });
+    }
+
     try {
-        const formData = await req.formData();
-        const type = formData.get('type');
-        const preview = formData.get('preview');
-        const text = type === 'text' ? formData.get('text') : null;
-        const file = formData.get('file');
+        console.log('Querying for event_code:', event_code); // Log the event_code being queried
+        const events = await prisma.timelineEntry.findMany({
+            where: { event_code: event_code },
+        });
+        console.log('Retrieved events:', events); // Log the retrieved events
 
-        let mediaUrl = '';
-        if (file) {
-            // Upload file to Vercel Blob Storage
-            const uploadResult = await blobStorage.upload(file);
-            mediaUrl = uploadResult.url;  // Assuming it returns the URL of the uploaded file
+        if (!events) {
+            return NextResponse.json({ error: 'Event not found' }, { status: 404 });
         }
 
-        const newEntry = await prisma.timelineEntry.create({
-            data: { type, mediaUrl, text, preview }
-        });
-
-        return new Response(JSON.stringify(newEntry), { status: 201 });
+        return NextResponse.json(events);
     } catch (error) {
-        console.error('Error creating entry:', error);
-        return new Response('Error creating entry', { status: 500 });
+        console.error('Error fetching event:', error);
+        return NextResponse.error();
     }
 }
-
-export async function GET(req) {
-    try {
-        const entries = await prisma.timelineEntry.findMany({
-            orderBy: { createdAt: 'asc' }
-        });
-        return new Response(JSON.stringify(entries), { status: 200 });
-    } catch (error) {
-        console.error('Error fetching entries:', error);
-        return new Response('Error fetching entries', { status: 500 });
-    }
-}
-

@@ -14,6 +14,15 @@ datasource db {
 }
 
 // Define your models here
+model Event {
+  id        Int            @id @default(autoincrement())
+  code      String         @unique // Unique identifier for the event
+  title     String
+  description String?
+  createdAt DateTime       @default(now())
+  entries   TimelineEntry[] // One event can have many timeline entries
+}
+
 model TimelineEntry {
   id        Int      @id @default(autoincrement())
   type      String
@@ -21,4 +30,6 @@ model TimelineEntry {
   text      String?
   preview   String?
   createdAt DateTime @default(now())
+  event_code   String      // Foreign key to reference the Event
+  event     Event    @relation(fields: [event_code], references: [code]) // Establish the relationship
 }
