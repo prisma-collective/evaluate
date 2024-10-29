@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from 'react';
 import React from 'react';
+import AddEntryForm from '../AddEntryForm'; // Import the AddEntryForm component
 
 // Define the timeline entry interface
 interface TimelineEntry {
@@ -64,6 +65,7 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
             <h1>Timeline entries for event code: {event_code}</h1>
+            <AddEntryForm /> {/* Add the AddEntryForm component here */}
             {eventEntires.length ? (
                 <ul>
                     {eventEntires.map(entry => (

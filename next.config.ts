@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   turbo: {
@@ -7,6 +7,6 @@ const nextConfig: NextConfig = {
     moduleIdStrategy: 'deterministic', // Optional for consistent module IDs in production
     resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'], // Custom file extensions
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
