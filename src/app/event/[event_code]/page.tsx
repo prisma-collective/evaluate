@@ -4,18 +4,8 @@ import { useEffect, useState, use } from 'react';
 import React from 'react';
 import AddEntryForm from '../AddEntryForm'; // Import the AddEntryForm component
 import Timeline from '../Timeline';
-
-// Define the timeline entry interface
-interface TimelineEntry {
-    id: number;
-    type: string;
-    mediaUrl: string | null; // Allow undefined
-    text: string | null; // Change from string | undefined to string | null
-    preview: string | null; // Optional and can be null
-    happenedAt: Date; // Use Date for JavaScript Date object
-    createdAt: Date; // Use Date for JavaScript Date object
-    event_code: string; // Foreign key to reference the Event
-}
+import { Event, TimelineEntry } from '@prisma/client';
+import Image from 'next/image';
 
 // Define a new interface for the response data
 interface TimelineEntries {
@@ -34,6 +24,7 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
     const [eventEntries, setEventEntries] = useState<TimelineEntries>({ entries: [] }); // Initialize with an empty entries array
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [event, setEvent] = useState<Event | null>(null);
 
     useEffect(() => {
         const fetchEventTimeline = async () => {
@@ -45,11 +36,11 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
             }
             console.log('Fetching timeline entries for code:', event_code);
             const res = await fetch(`/api/timeline?event_code=${event_code}`);
-            console.log('Response status:', res.status);
+            console.log('Response status timeline api call:', res.status);
             
             if (res.ok) {
                 const data: TimelineEntry[] = await res.json(); // Expecting an array directly
-                console.log('Fetched event data, length:', data.entries.length);
+                console.log('Fetched event timeline data, length:', data.entries.length);
                 console.log('Setting event state'); // Log before setting state
                 setEventEntries({ entries: data });
             } else {
@@ -60,7 +51,21 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
             setLoading(false);
         };
 
+        const fetchEvent = async () => {
+            // Fetch the event record
+            const eventRes = await fetch(`/api/event?event_code=${encodeURIComponent(event_code)}`);
+            if (eventRes.ok) {
+                const eventData = await eventRes.json();
+                console.log("Fetched event", eventData.event.title)
+                setEvent(eventData.event); // Set the event record
+            } else {
+                console.error('Failed to fetch event record, status:', eventRes.status);
+                setError('Failed to fetch event record');
+            }
+        }
+
         fetchEventTimeline();
+        fetchEvent();
     }, [event_code]);
 
     // Render phase
@@ -71,8 +76,20 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="flex flex-col items-center justify-start pt-20">
-                <h1 className="text-center mb-4">Timeline entries for event code: {event_code}</h1>
+            <div className='absolute items-start justify-start p-10'>
+                <a href="https://prisma.events" target="_blank" rel="noopener noreferrer" className="mb-6">
+                    <Image 
+                        src="/logo_colour_w_text.svg" // Replace with your logo path
+                        alt="Prisma Logo" 
+                        width={150} // Set the desired width
+                        height={100} // Set the desired height
+                        className="mb-4" // Optional: Add margin below the logo
+                    />
+                </a>
+            </div>
+            <div className="flex flex-col items-center justify-start pt-40">
+                <h1 className='text-center text-4xl p-4'>{event ? event.title : 'Loading event...'}</h1>
+                <h1 className="text-center mb-4 text-gray-400">Timeline entries for event code: {event_code}</h1>
             </div>
             
             <div className="flex-grow flex items-center justify-center md:justify-start">

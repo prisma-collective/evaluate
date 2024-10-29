@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx prisma/seed.ts",
-    "clear-db": "tsx prisma/clearDatabase.ts", 
+    "clear-db": "tsx prisma/clearDatabase.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

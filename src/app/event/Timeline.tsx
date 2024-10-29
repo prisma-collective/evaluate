@@ -12,7 +12,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
 
   // Dynamic parameters based on viewport
   const [width, setWidth] = useState(window.innerWidth * 0.8);
-  const [height, setHeight] = useState(window.innerHeight * 0.6);
+  const [height, setHeight] = useState(window.innerHeight * 0.5);
   const [radius, setRadius] = useState(window.innerWidth * 1.5); // Adjust curvature based on width
   const [centerY, setCenterY] = useState(height + radius - 110);
   const [centerX, setCenterX] = useState(width / 2);
@@ -23,7 +23,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   useEffect(() => {
     const handleResize = () => {
       setWidth(window.innerWidth * 0.9);
-      setHeight(window.innerHeight* 0.6);
+      setHeight(window.innerHeight* 0.5);
       setRadius(window.innerWidth * 1.5);
       setCenterY((window.innerHeight* 0.6) + (window.innerWidth * 1.5) - 110);
       setCenterX((window.innerWidth * 0.9) / 2);
@@ -75,9 +75,9 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const handleCloseModal = () => setSelectedEntry(null);
 
   return (
-    <div className="relative w-full mx-auto overflow-hidden border border-gray-200">
+    <div className="relative w-full mx-auto overflow-hidden">
       {/* Arc Timeline */}
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height + 50}`} className="mx-auto border border-red-600">
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height + 50}`} className="mx-auto">
         {/* Draw the arc path */}
         <path
           d={`M ${centerX - radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}

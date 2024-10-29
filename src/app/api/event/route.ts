@@ -16,7 +16,7 @@ export async function GET(req: Request) {
         });
 
         if (event) {
-            return NextResponse.json({ valid: true }); // Event found
+            return NextResponse.json({ valid: true, event }); // Event found
         } else {
             return NextResponse.json({ valid: false }, { status: 404 }); // Event not found
         }
