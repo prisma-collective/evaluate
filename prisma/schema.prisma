@@ -24,12 +24,13 @@ model Event {
 }
 
 model TimelineEntry {
-  id        Int      @id @default(autoincrement())
-  type      String
-  mediaUrl  String?
-  text      String?
-  preview   String?
-  createdAt DateTime @default(now())
-  event_code   String      // Foreign key to reference the Event
-  event     Event    @relation(fields: [event_code], references: [code]) // Establish the relationship
+  id                Int      @id @default(autoincrement())
+  type              String
+  mediaUrl          String?
+  text              String?
+  preview           String?
+  happenedAt        DateTime
+  createdAt         DateTime @default(now())
+  event_code        String      // Foreign key to reference the Event
+  event             Event    @relation(fields: [event_code], references: [code]) // Establish the relationship
 }

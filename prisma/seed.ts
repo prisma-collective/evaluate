@@ -23,6 +23,7 @@ async function main() {
                 text: 'This is the first event entry.',
                 preview: 'First event entry preview',
                 event_code: event.code, // Associate with the created event
+                happenedAt: new Date('2024-10-25T10:00:00Z'), // Example timestamp
             },
             {
                 type: 'audio',
@@ -30,6 +31,7 @@ async function main() {
                 text: null,
                 preview: 'Audio event entry preview',
                 event_code: event.code, // Associate with the created event
+                happenedAt: new Date('2024-10-25T14:30:00Z'), // Example timestamp
             },
             {
                 type: 'video',
@@ -37,6 +39,7 @@ async function main() {
                 text: null,
                 preview: 'Video event entry preview',
                 event_code: event.code, // Associate with the created event
+                happenedAt: new Date('2024-10-26T09:15:00Z'), // Example timestamp
             },
             {
                 type: 'text',
@@ -44,6 +47,7 @@ async function main() {
                 text: 'This is the second event entry.',
                 preview: 'Second event entry preview',
                 event_code: event.code, // Associate with the created event
+                happenedAt: new Date('2024-10-26T16:45:00Z'), // Example timestamp
             },
         ],
     });
