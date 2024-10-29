@@ -98,7 +98,7 @@ const AddEntryForm: React.FC = () => {
 
             <div
                 ref={formRef}
-                className={`mt-2 overflow-hidden bg-gray-800 bg-opacity-50 text-white rounded-xl border border-gray-600 shadow-lg transition-all duration-500 ease-in-out ${
+                className={`mt-2 overflow-hidden bg-gray-700 bg-opacity-80 text-white rounded-xl border border-gray-600 shadow-lg transition-all duration-500 ease-in-out ${
                     isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
                 }`}
                 style={{ width: '300px' }}
@@ -148,7 +148,7 @@ const AddEntryForm: React.FC = () => {
                     {(type === 'audio' || type === 'video' || type === 'image') && (
                         <div className="mt-4">
                             {/* Custom styled upload button */}
-                            <label htmlFor="file-upload" className="flex items-center justify-center bg-gray-800 text-white py-2 px-4 rounded-lg cursor-pointer transition duration-200 hover:bg-gray-500">
+                            <label htmlFor="file-upload" className="flex items-center justify-center bg-gray-900 hover:bg-white text-gray-100 hover:text-black hover:font-bold py-2 px-4 rounded-lg cursor-pointer transition duration-200">
                                 {file ? `File: ${file.name}` : "Upload Media"} {/* Show file name if file is selected */}
                             </label>
                             
@@ -166,7 +166,7 @@ const AddEntryForm: React.FC = () => {
                         </div>
                     )}
                     <button
-                        className="bg-[#8067ff] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#5533ff] transition duration-200"
+                        className="bg-[#7faec2] hover:bg-[#003a53] text-black hover:text-gray-200 font-semibold py-2 px-4 rounded-lg transition duration-200"
                         type="submit"
                     >
                         Submit

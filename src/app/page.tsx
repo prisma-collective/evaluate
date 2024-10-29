@@ -56,7 +56,6 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-16 max-w-2xl">
-          {/* Static card containing the wallet connection form */}
           <div className="relative bg-gray-800 bg-opacity-70 rounded-xl border border-gray-600 shadow-lg overflow-hidden flex flex-col">
             <div className="p-4 flex flex-col items-center justify-center">
               {/* Instructions */}

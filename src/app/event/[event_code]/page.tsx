@@ -73,7 +73,6 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
         <div className="flex flex-col min-h-screen">
             <div className="flex flex-col items-center justify-start pt-20">
                 <h1 className="text-center mb-4">Timeline entries for event code: {event_code}</h1>
-                <AddEntryForm />
             </div>
             
             <div className="flex-grow flex items-center justify-center md:justify-start">
@@ -82,6 +81,7 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
                         <Timeline entries={eventEntries.entries} />
                     </div>
                 </div>
+                <AddEntryForm />
             </div>
         </div>
     );

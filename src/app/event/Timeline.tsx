@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TimelineEntry } from '@prisma/client';
 
 interface TimelineProps {
@@ -8,17 +8,36 @@ interface TimelineProps {
 const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const [selectedEntry, setSelectedEntry] = useState<TimelineEntry | null>(null);
   const [previewEntry, setPreviewEntry] = useState<TimelineEntry | null>(null);
+  const [hoverEntry, setHoverEntry] = useState<TimelineEntry | null>(null);
 
-  // Fine-tuning parameters
-  const width = 1400; // Viewport width
-  const height = 400; // Viewport height
-  const radius = 2000; // Controls arc flatness or curvature
-  const angleRange = Math.PI / 6; // Controls the visible arc angle (30 degrees)
-  const centerX = width / 2; // Centered horizontally
-  const centerY = height + radius - 100; // Moves arc below visible area for flatter shape
+  // Dynamic parameters based on viewport
+  const [width, setWidth] = useState(window.innerWidth * 0.8);
+  const [height, setHeight] = useState(window.innerHeight * 0.6);
+  const [radius, setRadius] = useState(window.innerWidth * 1.5); // Adjust curvature based on width
+  const [centerY, setCenterY] = useState(height + radius - 110);
+  const [centerX, setCenterX] = useState(width / 2);
+  
+  const angleRange = Math.PI / 8; // Controls the visible arc angle (30 degrees)
 
-  // Safely convert dates to timestamps
-  const timestamps = entries.map(e => new Date(e.happenedAt).getTime());
+  // Update dimensions on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth * 0.9);
+      setHeight(window.innerHeight* 0.6);
+      setRadius(window.innerWidth * 1.5);
+      setCenterY((window.innerHeight* 0.6) + (window.innerWidth * 1.5) - 110);
+      setCenterX((window.innerWidth * 0.9) / 2);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    console.log("Radius: ", window.innerWidth * 1.5)
+    console.log("Center Y: ", (window.innerHeight* 0.6) + (window.innerWidth * 1.5) - 110)
+    console.log("Center X: ", (window.innerWidth * 0.9) / 2)
+    return () => window.removeEventListener('resize', handleResize);
+  }, [width, height]);
+
+  // Convert dates to timestamps
+  const timestamps = entries.map((e) => new Date(e.happenedAt).getTime());
 
   // Calculate time range
   const timeRange = {
@@ -32,7 +51,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
     const progress = (timestamp - timeRange.start) / (timeRange.end - timeRange.start);
     const angle = Math.PI / 2 + (angleRange / 2) - progress * angleRange; // Start and end angles calculated for the arc
 
-    const x = centerX + radius * Math.cos(angle);
+    const x = centerX + radius * Math.cos(angle); // Center x based on width
     const y = centerY - radius * Math.sin(angle);
 
     return { x, y };
@@ -45,18 +64,20 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
 
   const handleMouseEnter = (entry: TimelineEntry) => {
     setPreviewEntry(entry);
+    setHoverEntry(entry);
   };
 
   const handleMouseLeave = () => {
     setPreviewEntry(null);
+    setHoverEntry(null);
   };
 
   const handleCloseModal = () => setSelectedEntry(null);
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
+    <div className="relative w-full mx-auto overflow-hidden border border-gray-200">
       {/* Arc Timeline */}
-      <svg width={width} height={height} className="mx-auto">
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height + 50}`} className="mx-auto border border-red-600">
         {/* Draw the arc path */}
         <path
           d={`M ${centerX - radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}
@@ -73,16 +94,16 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
           return (
             <g
               key={entry.id}
-              onClick={() => handleDotClick(entry)}
-              onMouseEnter={() => handleMouseEnter(entry)}
-              onMouseLeave={handleMouseLeave}
               className="relative"
             >
               <circle
+                onClick={() => handleDotClick(entry)}
+                onMouseEnter={() => handleMouseEnter(entry)}
+                onMouseLeave={handleMouseLeave}
                 cx={pos.x}
                 cy={pos.y}
-                r="8"
-                className="fill-[#7faec2] hover:fill-[#003a53] cursor-pointer transition-colors"
+                r={hoverEntry === entry ? "10" : "6"}
+                className="fill-[#7faec2] hover:fill-[#003a53] cursor-pointer transition-all duration-300"
               />
               <text
                 x={pos.x}
@@ -96,9 +117,9 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
               {/* Preview tooltip */}
               {previewEntry === entry && (
                 <foreignObject
-                  x={pos.x - 100}
+                  x={pos.x - 200}
                   y={pos.y - 60}
-                  width="200"
+                  width="400"
                   height="40"
                 >
                   <div className="bg-gray-800 bg-opacity-90 p-2 rounded-lg shadow-lg text-sm text-center border border-slate-200">
@@ -134,7 +155,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
               ) : selectedEntry.type === 'video' ? (
                 <video controls className="w-full rounded-lg" src={selectedEntry.mediaUrl || undefined} />
               ) : (
-                <p className="text-gray-700">{selectedEntry.text}</p>
+                <p className="text-gray-300">{selectedEntry.text}</p>
               )}
             </div>
           </div>
