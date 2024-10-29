@@ -88,7 +88,7 @@ const AddEntryForm: React.FC = () => {
             {showButton && (
                 <div className={`transition-opacity duration-500 ${showButton ? 'opacity-100' : 'opacity-0'}`}>
                     <button
-                        className="bg-[#8067ff] hover:bg-[#5533ff] text-white text-2xl py-2 px-4 rounded-xl shadow-lg hover:scale-110 duration-200"
+                        className="bg-[#7faec2] hover:bg-[#003a53] text-black text-3xl hover:text-gray-200 py-2 px-4 rounded-2xl shadow-lg hover:scale-110 duration-200"
                         onClick={() => setIsOpen(true)} // Open the form on click
                     >
                         +

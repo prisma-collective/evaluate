@@ -74,8 +74,8 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
           d={`M ${centerX - radius} ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}`}
           fill="none"
           stroke="#e2e8f0"
-          strokeWidth="2"
-          className="stroke-slate-200"
+          strokeWidth="1.5"
+          className="stroke-slate-800"
         />
 
         {/* Draw dots for each entry */}
@@ -93,13 +93,13 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
                 cx={pos.x}
                 cy={pos.y}
                 r="8"
-                className="fill-blue-500 hover:fill-blue-600 cursor-pointer transition-colors"
+                className="fill-[#7faec2] hover:fill-[#003a53] cursor-pointer transition-colors"
               />
               <text
                 x={pos.x}
                 y={pos.y + 25}
                 textAnchor="middle"
-                className="text-xs fill-slate-600"
+                className="text-xs fill-slate-300"
               >
                 {new Date(entry.happenedAt).toLocaleDateString()}
               </text>
@@ -112,7 +112,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
                   width="200"
                   height="40"
                 >
-                  <div className="bg-white p-2 rounded-lg shadow-lg text-sm text-center border border-slate-200">
+                  <div className="bg-gray-800 bg-opacity-90 p-2 rounded-lg shadow-lg text-sm text-center border border-slate-200">
                     {entry.preview || entry.text || 'No preview available'}
                   </div>
                 </foreignObject>
@@ -125,21 +125,21 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
       {/* Modal */}
       {selectedEntry && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           onClick={handleCloseModal}
         >
           <div 
-            className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 relative"
+            className="bg-gray-700 bg-opacity-40 border border-gray-500 rounded-lg p-6 max-w-2xl w-full mx-4 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-4 text-xl text-gray-300 hover:text-[#7faec2]"
             >
               x
             </button>
             
-            <div className="mt-4">
+            <div className="mt-4 p-2">
               {selectedEntry.type === 'audio' ? (
                 <audio 
                   controls 
