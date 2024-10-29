@@ -9,44 +9,32 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const [selectedEntry, setSelectedEntry] = useState<TimelineEntry | null>(null);
   const [previewEntry, setPreviewEntry] = useState<TimelineEntry | null>(null);
 
-  // Calculate timeline parameters
-  const width = 800;
-  const height = 600;
-  const radius = 300;
-  const centerX = width / 2;
-  const centerY = height - 50;
+  // Fine-tuning parameters
+  const width = 1400; // Viewport width
+  const height = 400; // Viewport height
+  const radius = 2000; // Controls arc flatness or curvature
+  const angleRange = Math.PI / 6; // Controls the visible arc angle (30 degrees)
+  const centerX = width / 2; // Centered horizontally
+  const centerY = height + radius - 100; // Moves arc below visible area for flatter shape
 
-  // Safely convert all dates to timestamps
+  // Safely convert dates to timestamps
   const timestamps = entries.map(e => new Date(e.happenedAt).getTime());
-  
-  // Create time range using the converted timestamps
+
+  // Calculate time range
   const timeRange = {
     start: Math.min(...timestamps),
-    end: Math.max(...timestamps)
+    end: Math.max(...timestamps),
   };
 
-  // Calculate dot positions along the arc
+  // Adjust dot positions along the arc based on parameters
   const calculatePosition = (entry: TimelineEntry) => {
-    console.log("Calculating positions")
     const timestamp = new Date(entry.happenedAt).getTime();
     const progress = (timestamp - timeRange.start) / (timeRange.end - timeRange.start);
-    const angle = Math.PI - (progress * Math.PI);
-  
+    const angle = Math.PI / 2 + (angleRange / 2) - progress * angleRange; // Start and end angles calculated for the arc
+
     const x = centerX + radius * Math.cos(angle);
     const y = centerY - radius * Math.sin(angle);
-    
-    console.log({
-      entry: entry.id,
-      timestamp,
-      timeRange,
-      progress,
-      angle,
-      position: { x, y },
-      centerX,
-      centerY,
-      radius
-    });
-    
+
     return { x, y };
   };
 
@@ -66,12 +54,13 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const handleCloseModal = () => setSelectedEntry(null);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto">
+    <div className="relative w-full max-w-7xl mx-auto overflow-hidden">
       {/* Arc Timeline */}
       <svg width={width} height={height} className="mx-auto">
         {/* Draw the arc path */}
         <path
-          d={`M ${centerX - radius} ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}`}
+          d={`M ${centerX - radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}
+             A ${radius} ${radius} 0 0 1 ${centerX + radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}`}
           fill="none"
           stroke="#e2e8f0"
           strokeWidth="1.5"
@@ -82,7 +71,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
         {entries.map((entry) => {
           const pos = calculatePosition(entry);
           return (
-            <g 
+            <g
               key={entry.id}
               onClick={() => handleDotClick(entry)}
               onMouseEnter={() => handleMouseEnter(entry)}
@@ -103,7 +92,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
               >
                 {new Date(entry.happenedAt).toLocaleDateString()}
               </text>
-              
+
               {/* Preview tooltip */}
               {previewEntry === entry && (
                 <foreignObject
@@ -124,11 +113,11 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
 
       {/* Modal */}
       {selectedEntry && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
           onClick={handleCloseModal}
         >
-          <div 
+          <div
             className="bg-gray-700 bg-opacity-40 border border-gray-500 rounded-lg p-6 max-w-2xl w-full mx-4 relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -138,20 +127,12 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
             >
               x
             </button>
-            
+
             <div className="mt-4 p-2">
               {selectedEntry.type === 'audio' ? (
-                <audio 
-                  controls 
-                  className="w-full"
-                  src={selectedEntry.mediaUrl || undefined}
-                />
+                <audio controls className="w-full" src={selectedEntry.mediaUrl || undefined} />
               ) : selectedEntry.type === 'video' ? (
-                <video
-                  controls
-                  className="w-full rounded-lg"
-                  src={selectedEntry.mediaUrl || undefined}
-                />
+                <video controls className="w-full rounded-lg" src={selectedEntry.mediaUrl || undefined} />
               ) : (
                 <p className="text-gray-700">{selectedEntry.text}</p>
               )}
