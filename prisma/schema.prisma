@@ -13,6 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+datasource mediaDb {
+  provider = "vercel-storage" // Hypothetical provider for Vercel Blob Storage
+  url      = env("MEDIA_DATABASE_URL") // URL for the blob storage
+}
+
 // Define your models here
 model Event {
   id        Int            @id @default(autoincrement())
@@ -33,4 +38,11 @@ model TimelineEntry {
   createdAt         DateTime @default(now())
   event_code        String      // Foreign key to reference the Event
   event             Event    @relation(fields: [event_code], references: [code]) // Establish the relationship
+}
+
+// Media model for Vercel Blob Storage
+model Media {
+  id        Int      @id @default(autoincrement())
+  url       String   // URL of the media file
+  createdAt DateTime @default(now())
 }
