@@ -13,10 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-datasource mediaDb {
-  provider = "vercel-storage" // Hypothetical provider for Vercel Blob Storage
-  url      = env("MEDIA_DATABASE_URL") // URL for the blob storage
-}
+//datasource mediaDb {
+//  provider = "vercel-storage" // Hypothetical provider for Vercel Blob Storage
+//  url      = env("MEDIA_DATABASE_URL") // URL for the blob storage
+//}
 
 // Define your models here
 model Event {
