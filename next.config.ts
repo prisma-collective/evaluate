@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     moduleIdStrategy: 'deterministic', // Optional for consistent module IDs in production
     resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'], // Custom file extensions
   },
+  serverExternalPackages: ['grammy']
 }
 
 export default nextConfig

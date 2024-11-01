@@ -1,0 +1,8 @@
+{
+    "bots": [
+      {
+        "name": "storying",
+        "path": "../src/bots/storying/bot.ts"
+      }
+    ]
+}

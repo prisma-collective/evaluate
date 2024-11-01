@@ -4,6 +4,9 @@ import Image from 'next/image';
 import './styles/style.css'; 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 export default function Home() {
 
