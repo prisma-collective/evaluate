@@ -6,33 +6,46 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-console.log('TELEGRAM_BOT_TOKEN:', process.env.TELEGRAM_BOT_TOKEN);
 
 if (!token) {
     throw new Error('Environment variable TELEGRAM_BOT_TOKEN is not set.');
 }
 
 // Initialize the bot with the token from environment variables
-export const bot = new Bot(token);
+const bot = new Bot(token);
+
+// Flag to track if the bot has been initialized
+
+let isInitialized = false;
+console.log("Just after let: ", isInitialized)
 
 // Attach middleware to handle incoming messages
 bot.on('message', async (ctx) => {
     await ctx.reply('Hi there!');
 });
 
+// Function to initialize the bot
+if (!isInitialized) {
+    await bot.init(); // Initialize the bot
+    isInitialized = true; // Set the flag to true after initialization
+    console.log('Bot initialized successfully');
+    console.log(isInitialized)
+};
+
 // Modify the createWebhookHandler to accept NextRequest
-export const createWebhookHandler = () => {
-    return async (req: NextRequest, res: { end: () => void; status: (code: number) => { json: (json: Record<string, unknown>) => NextResponse; send: (json: Record<string, unknown>) => NextResponse; }; }) => {
+export const botUpdateProcessor = () => {
+    return async (req: NextRequest) => {
         // Convert NextRequest to the format expected by the bot
         const body = await req.json(); // Assuming the body is JSON
+        console.log('Received webhook update:', body);
 
         // Handle the incoming update
         try {
-            await bot.handleUpdate(body); // Adjust this based on your bot's API
-            res.status(200).send({ success: true });
+            await bot.handleUpdate(body);
+            return NextResponse.json({ success: true }, { status: 200 });
         } catch (error) {
             console.error('Error handling webhook:', error);
-            res.status(500).send({ error: 'Internal Server Error' });
+            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
         }
     };
 };
