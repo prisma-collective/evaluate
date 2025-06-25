@@ -146,15 +146,6 @@ export default function Navbar() {
                     >
                         <BsCalendarWeek className={`${iconClasses} ${getRandomHoverColor()}`} />
                     </a>
-                    {/* Docs */}
-                    <a
-                        href="https://docs.prisma.events/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`${getRandomHoverColor()}`}
-                    >
-                        Docs
-                    </a>
                     {/* Register */}
                     <SimpleButton buttonText="Register" redirectTo="https://register.prisma.events/" />
                 </div>
