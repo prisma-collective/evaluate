@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from 'next/font/google';
-import "./globals.css";
+import "./styles/globals.css";
+import Navbar from "@/components/Navbar";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -13,13 +14,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     title: "Prisma Events Evaluation",
-    description: "Evaluate Prisma Events",
+    description: "Explore a case-study of an action-learning journey.",
     images: [
       {
-        url: "https://evaluate.prisma.events/sm_banner.png",
+        url: "https://evaluate.prisma.events/og_image.png",
         width: 1504,
         height: 787,
-        alt: "Prisma Events Registration Preview",
+        alt: "Prisma Events Evaluation Preview",
       },
     ],
     url: "https://evaluate.prisma.events",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${spaceGrotesk.className}`}>
+        <Navbar />
         {children}
       </body>
     </html>

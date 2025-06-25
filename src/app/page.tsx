@@ -1,7 +1,6 @@
 "use client";
 
-import Image from 'next/image'; 
-import './styles/style.css'; 
+import './styles/globals.css'; 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import dotenv from 'dotenv';
@@ -41,22 +40,12 @@ export default function Home() {
   return (
     <div className="h-screen relative">
       <div className="min-h-screen flex flex-col items-center justify-center relative z-20 pt-5 pb-5">
-        <a href="https://prisma.events" target="_blank" rel="noopener noreferrer" className="mb-6">
-          <Image 
-              src="/prisma-name-text-dark.svg" 
-              alt="Prisma Events Logo" 
-              className="h-16 w-auto animate-spin-slow" 
-              width={64} // Specify width
-              height={64} // Specify height
-          />
-        </a>
-
         <div className="container mx-auto px-16 max-w-2xl">
           <div className="relative overflow-hidden flex flex-col">
             <div className="p-4 flex flex-col items-center justify-center">
               {/* Instructions */}
               <p className="text-gray-300 mb-6 text-center">
-                Please enter a valid event code
+                Please enter an event code to proceed
               </p>
               <form onSubmit={(e) => {
                 e.preventDefault(); // Prevent the default form submission

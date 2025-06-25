@@ -11,6 +11,13 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'prisma-a': '#cd5aff',
+        'prisma-b': '#8067ff',
+        'prisma-c': '#ef64ff',
+        'prisma-d': '#ff4b85',
+      },
+      fontFamily: {
+        sans: ['Space Grotesk', 'sans-serif']
       },
     },
   },
