@@ -2,7 +2,7 @@
 
 import './styles/globals.css'; 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dotenv from 'dotenv';
 
 dotenv.config()
@@ -13,6 +13,13 @@ export default function Home() {
 
   const [event_code, setEventCode] = useState<string>(""); // Ensure type is specified
 
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      router.push("/unsupported");
+    }
+  }, []);
+
   const handleSubmit = async (event_code: string) => {
       if (!event_code.trim()) {
           alert("Please enter an event code.");
@@ -20,20 +27,14 @@ export default function Home() {
       }
 
       try {
-          const response = await fetch(`/api/event?event_code=${encodeURIComponent(event_code.trim())}`, {
-              method: 'GET',
-          });
-
-          const data = await response.json();
-
-          if (data.valid) {
-              router.push(`/event/${event_code}`);
+          if (event_code.trim() === "accra") {
+              router.push(`/${encodeURIComponent(event_code)}`);
           } else {
               alert("Event code not found. Please enter a valid event code.");
           }
       } catch (error) {
-          console.error("Error validating event ID:", error);
-          alert("There was an issue validating the event ID. Please try again later.");
+          console.error("Error validating event code:", error);
+          alert("There was an issue validating the event code. Please try again later.");
       }
   };
 
@@ -56,7 +57,7 @@ export default function Home() {
                   id="event_code"
                   name="event_code"
                   placeholder="Event code"
-                  className="border border-gray-800 p-2 rounded text-center text-white bg-slate-900 w-80"
+                  className="border border-gray-800 p-2 rounded-xl text-center text-white bg-slate-800 w-80"
                   value={event_code} // Bind the input value to state
                   onChange={(e) => setEventCode(e.target.value)} // Update state on change
                   autoComplete="off" // Prevent browser from auto-filling
