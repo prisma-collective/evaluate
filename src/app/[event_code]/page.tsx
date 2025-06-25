@@ -2,8 +2,8 @@
 
 import { useEffect, useState, use } from 'react';
 import React from 'react';
-import AddEntryForm from '../AddEntryForm'; // Import the AddEntryForm component
-import Timeline from '../Timeline';
+import AddEntryForm from '../event/AddEntryForm'; // Import the AddEntryForm component
+import Timeline from '../../components/Timeline';
 import { Event, TimelineEntry } from '@prisma/client';
 import Image from 'next/image';
 
