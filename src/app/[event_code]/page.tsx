@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import React from 'react';
 import Timeline from '@/components/Timeline';
 
@@ -31,6 +31,7 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
 
     const [eventEntries, setEventEntries] = useState<TimelineEntries>({ entries: [] }); // Initialize with an empty entries array
     const [error, setError] = useState<string | null>(null);
+    const entriesRef = useRef<TimelineEntry[]>([]);
 
     useEffect(() => {
         const fetchEventTimelineStream = async () => {
@@ -52,9 +53,8 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
           
           const flushToState = () => {
             if (tempEntries.length > 0) {
-              setEventEntries(prev => ({
-                entries: [...prev.entries, ...tempEntries],
-              }));
+              entriesRef.current = [...entriesRef.current, ...tempEntries];
+              setEventEntries({ entries: [...entriesRef.current] });
               tempEntries = [];
             }
           };
@@ -73,6 +73,8 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
         
               const lines = buffer.split('\n');
               buffer = lines.pop() || ''; // Last line might be incomplete
+
+              let i = 0;
         
               for (const line of lines) {
                 try {
@@ -87,8 +89,10 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
                     }
                   }
 
+                  if (i < 5 || i > lines.length - 5) console.log('Parsed entry (first/ last 5):', entry);
+                  i++;
+
                   tempEntries.push(entry); // Buffer instead of setState directly
-                  console.log('Parsed entry:', entry);
                 } catch (err) {
                   console.error('Failed to parse line', line, err);
                 }
@@ -119,12 +123,9 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 text-white text-4xl font-bold pointer-events-none">
-              {eventEntries.entries.length}
-            </div>
-
             <div className="flex flex-col items-center justify-start pt-40">
-                <h1 className="text-center mb-4 text-gray-400">Timeline entries for {event_code}</h1>
+                <h1 className="text-center text-gray-200">Timeline entries for {event_code}</h1>
+                <p className='text-center text-sm text-gray-400'>{eventEntries.entries.length}</p>
             </div>
             
             <div className="flex-grow flex items-center justify-center md:justify-start">
