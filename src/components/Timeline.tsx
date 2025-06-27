@@ -1,9 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import { TimelineEntry } from '@prisma/client';
+
+// Custom interface to replace Prisma's TimelineEntry
+interface TimelineEntry {
+  id: number;
+  type: string;
+  mediaUrl?: string | null;
+  text?: string | null;
+  preview?: string | null;
+  date: string | Date; // Neo4j date type - can be string or Date object
+  createdAt: string | Date;
+  event_code: string;
+}
 
 interface TimelineProps {
   entries: TimelineEntry[];
 }
+
+interface DateObject {
+  year: number;
+  month: number;
+  day: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
+  nanosecond?: number;
+}
+
+const getTimestamp = (date: string | Date | DateObject): number => {
+
+  if (typeof date === 'string' || date instanceof Date) {
+    return new Date(date).getTime();
+  }
+
+  if (
+    typeof date === 'object' &&
+    'year' in date &&
+    'month' in date &&
+    'day' in date
+  ) {
+    const d = new Date(
+      date.year,
+      date.month - 1, // JS months are 0-based
+      date.day,
+      date.hour ?? 0,
+      date.minute ?? 0,
+      date.second ?? 0,
+      Math.floor((date.nanosecond ?? 0) / 1e6) // convert ns to ms
+    );
+    return d.getTime();
+  }
+
+  return NaN;
+};
+
+const toDate = (date: string | Date | DateObject): Date | null => {
+  if (typeof date === 'string' || date instanceof Date) {
+    return new Date(date);
+  }
+
+  if (
+    typeof date === 'object' &&
+    'year' in date &&
+    'month' in date &&
+    'day' in date
+  ) {
+    return new Date(
+      date.year,
+      date.month - 1, // JS months are 0-based
+      date.day,
+      date.hour ?? 0,
+      date.minute ?? 0,
+      date.second ?? 0,
+      Math.floor((date.nanosecond ?? 0) / 1e6) // convert ns to ms
+    );
+  }
+
+  return null;
+};
 
 const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const [selectedEntry, setSelectedEntry] = useState<TimelineEntry | null>(null);
@@ -11,33 +84,41 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const [hoverEntry, setHoverEntry] = useState<TimelineEntry | null>(null);
 
   // Dynamic parameters based on viewport
-  const [width, setWidth] = useState(window.innerWidth * 0.8);
-  const [height, setHeight] = useState(window.innerHeight * 0.5);
-  const [radius, setRadius] = useState(window.innerWidth * 1.5); // Adjust curvature based on width
-  const [centerY, setCenterY] = useState(height + radius - 110);
-  const [centerX, setCenterX] = useState(width / 2);
+  const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
+  const [radius, setRadius] = useState<number>(0);
+  const [centerY, setCenterY] = useState<number>(0);
+  const [centerX, setCenterX] = useState<number>(0);
   
   const angleRange = Math.PI / 8; // Controls the visible arc angle (30 degrees)
 
   // Update dimensions on resize
   useEffect(() => {
-    const handleResize = () => {
-      setWidth(window.innerWidth * 0.9);
-      setHeight(window.innerHeight* 0.5);
-      setRadius(window.innerWidth * 1.5);
-      setCenterY((window.innerHeight* 0.6) + (window.innerWidth * 1.5) - 110);
-      setCenterX((window.innerWidth * 0.9) / 2);
+    const calculateLayout = () => {
+      const newWidth = window.innerWidth * 0.9;
+      const newHeight = window.innerHeight * 0.5;
+      const newRadius = window.innerWidth * 1.5;
+      const newCenterY = (window.innerHeight * 0.6) + newRadius - 110;
+      const newCenterX = newWidth / 2;
+
+      setWidth(newWidth);
+      setHeight(newHeight);
+      setRadius(newRadius);
+      setCenterY(newCenterY);
+      setCenterX(newCenterX);
+
+      console.log("Radius:", newRadius);
+      console.log("Center Y:", newCenterY);
+      console.log("Center X:", newCenterX);
     };
     
-    window.addEventListener('resize', handleResize);
-    console.log("Radius: ", window.innerWidth * 1.5)
-    console.log("Center Y: ", (window.innerHeight* 0.6) + (window.innerWidth * 1.5) - 110)
-    console.log("Center X: ", (window.innerWidth * 0.9) / 2)
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', calculateLayout);
+    calculateLayout();
+    return () => window.removeEventListener('resize', calculateLayout);
   }, [width, height]);
 
-  // Convert dates to timestamps
-  const timestamps = entries.map((e) => new Date(e.happenedAt).getTime());
+  // Convert dates to timestamps using the helper function
+  const timestamps = entries.map((e) => getTimestamp(e.date));
 
   // Calculate time range
   const timeRange = {
@@ -47,15 +128,18 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
 
   // Adjust dot positions along the arc based on parameters
   const calculatePosition = (entry: TimelineEntry) => {
-    const timestamp = new Date(entry.happenedAt).getTime();
+    const timestamp = getTimestamp(entry.date);
+  
     const progress = (timestamp - timeRange.start) / (timeRange.end - timeRange.start);
-    const angle = Math.PI / 2 + (angleRange / 2) - progress * angleRange; // Start and end angles calculated for the arc
-
-    const x = centerX + radius * Math.cos(angle); // Center x based on width
+  
+    const angle = Math.PI / 2 + (angleRange / 2) - progress * angleRange;
+  
+    const x = centerX + radius * Math.cos(angle);
     const y = centerY - radius * Math.sin(angle);
-
+  
     return { x, y };
   };
+  
 
   const handleDotClick = (entry: TimelineEntry) => {
     setPreviewEntry(null);
@@ -83,9 +167,8 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
           d={`M ${centerX - radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}
              A ${radius} ${radius} 0 0 1 ${centerX + radius * Math.cos(angleRange / 2)} ${centerY - radius * Math.sin(angleRange / 2)}`}
           fill="none"
-          stroke="#e2e8f0"
           strokeWidth="1.5"
-          className="stroke-slate-800"
+          className="stroke-gray-500"
         />
 
         {/* Draw dots for each entry */}
@@ -94,7 +177,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
           return (
             <g
               key={entry.id}
-              className="relative"
+              className="relative group"
             >
               <circle
                 onClick={() => handleDotClick(entry)}
@@ -102,16 +185,16 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
                 onMouseLeave={handleMouseLeave}
                 cx={pos.x}
                 cy={pos.y}
-                r={hoverEntry === entry ? "10" : "6"}
-                className="fill-[#7faec2] hover:fill-[#003a53] cursor-pointer transition-all duration-300"
+                r={hoverEntry === entry ? "5" : "3"}
+                className="fill-slate-500 hover:fill-prisma-a cursor-pointer transition-all duration-300 opacity-60 group-hover:opacity-100"
               />
               <text
                 x={pos.x}
                 y={pos.y + 25}
                 textAnchor="middle"
-                className="text-xs fill-slate-300"
+                className="text-xs fill-slate-300 opacity-0 group-hover:opacity-100 transition-all duration-300"
               >
-                {new Date(entry.happenedAt).toLocaleDateString()}
+                {toDate(entry.date)?.toLocaleDateString()}
               </text>
 
               {/* Preview tooltip */}

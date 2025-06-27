@@ -14,11 +14,13 @@ export default function Home() {
   const [event_code, setEventCode] = useState<string>(""); // Ensure type is specified
 
   useEffect(() => {
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-      router.push("/unsupported");
+    if (typeof window !== 'undefined') {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        router.push("/unsupported");
+      }
     }
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (event_code: string) => {
       if (!event_code.trim()) {

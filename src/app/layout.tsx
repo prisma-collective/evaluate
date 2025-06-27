@@ -9,11 +9,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Prisma Events Evaluation",
+  title: "Prisma Evaluation",
   description: "Evaluate Prisma Events",
   openGraph: {
     type: "website",
-    title: "Prisma Events Evaluation",
+    title: "Prisma Evaluation",
     description: "Explore a case-study of an action-learning journey.",
     images: [
       {
