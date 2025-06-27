@@ -48,7 +48,7 @@ export default function Home() {
             <div className="p-4 flex flex-col items-center justify-center">
               {/* Instructions */}
               <p className="text-gray-300 mb-3 text-center">
-                Please verify your Prisma ID to see the Cases you're currently subscribed to, or <a href="https://register.prisma.events/" className="text-prisma-a">register</a> to receive one.
+                Please verify your Prisma ID to see the Cases you&apos;re currently subscribed to, or <a href="https://register.prisma.events/" className="text-prisma-a">register</a> to receive one.
               </p>
               <p className="text-gray-400 mb-6 text-center italic">
                 ... or you can just type accra below.
