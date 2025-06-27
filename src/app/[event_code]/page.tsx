@@ -4,16 +4,16 @@ import { useEffect, useState, use, useRef } from 'react';
 import React from 'react';
 import Timeline from '@/components/Timeline';
 
-// Custom interface to replace Prisma's TimelineEntry
-interface TimelineEntry {
-  id: number;
-  type: string;
-  mediaUrl?: string | null;
-  text?: string | null;
-  preview?: string | null;
-  date: string | Date; // Neo4j date type - can be string or Date object
-  createdAt: string | Date;
-  event_code: string;
+export interface Node {
+  id: string | number | null; // Some IDs are numbers (e.g., TelegramChat), some are strings (UUIDs), some null
+  label: string; // e.g., 'Participant', 'TextContent', 'Voice', 'TelegramChat'
+  properties: Record<string, unknown>; // Properties vary by label
+}
+
+export interface TimelineEntry {
+  id: string;
+  date: Date; // Normalize this to a real Date object in preprocessing
+  connections: Node[];
 }
 
 interface TimelineEntries {

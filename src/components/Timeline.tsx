@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-// Custom interface to replace Prisma's TimelineEntry
-interface TimelineEntry {
-  id: number;
-  type: string;
-  mediaUrl?: string | null;
-  text?: string | null;
-  preview?: string | null;
-  date: string | Date; // Neo4j date type - can be string or Date object
-  createdAt: string | Date;
-  event_code: string;
+export interface Node {
+  id: string | number | null; // Some IDs are numbers (e.g., TelegramChat), some are strings (UUIDs), some null
+  label: string; // e.g., 'Participant', 'TextContent', 'Voice', 'TelegramChat'
+  properties: Record<string, unknown>; // Properties vary by label
 }
+
+export interface TimelineEntry {
+  id: string;
+  date: Date; // Normalize this to a real Date object in preprocessing
+  connections: Node[];
+}
+
 
 interface TimelineProps {
   entries: TimelineEntry[];
@@ -77,6 +78,14 @@ const toDate = (date: string | Date | DateObject): Date | null => {
 
   return null;
 };
+
+function getEntryPreview(entry: TimelineEntry) {
+    const connectionLabels = entry.connections.map(c => c.label);
+    const participant = entry.connections.find(c => c.label === 'Participant')?.properties?.handle ?? 'Unknown';
+    const chatTitle = entry.connections.find(c => c.label === 'TelegramChat')?.properties?.title ?? 'Unknown Chat';
+  
+    return `${participant} in ${chatTitle} — ${connectionLabels.length} connections:\n${connectionLabels.join(', ')}`;  
+}
 
 const Timeline: React.FC<TimelineProps> = ({ entries }) => {
   const [selectedEntry, setSelectedEntry] = useState<TimelineEntry | null>(null);
@@ -201,12 +210,12 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
               {previewEntry === entry && (
                 <foreignObject
                   x={pos.x - 200}
-                  y={pos.y - 60}
+                  y={pos.y - 100}
                   width="400"
-                  height="40"
+                  height="100"
                 >
                   <div className="bg-gray-800 bg-opacity-90 p-2 rounded-lg shadow-lg text-sm text-center border border-slate-200">
-                    {entry.preview || entry.text || 'No preview available'}
+                    {getEntryPreview(entry)}
                   </div>
                 </foreignObject>
               )}
@@ -233,13 +242,7 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
             </button>
 
             <div className="mt-4 p-2">
-              {selectedEntry.type === 'audio' ? (
-                <audio controls className="w-full" src={selectedEntry.mediaUrl || undefined} />
-              ) : selectedEntry.type === 'video' ? (
-                <video controls className="w-full rounded-lg" src={selectedEntry.mediaUrl || undefined} />
-              ) : (
-                <p className="text-gray-300">{selectedEntry.text}</p>
-              )}
+              
             </div>
           </div>
         </div>
