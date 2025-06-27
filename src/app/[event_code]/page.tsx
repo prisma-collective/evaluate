@@ -3,6 +3,7 @@
 import { useEffect, useState, use, useRef } from 'react';
 import React from 'react';
 import Timeline from '@/components/Timeline';
+import RAGChat from '@/components/RAGChat';
 
 export interface Node {
   id: string | number | null; // Some IDs are numbers (e.g., TelegramChat), some are strings (UUIDs), some null
@@ -132,6 +133,7 @@ const EventPage = ({ params }: { params: Promise<Params> }) => {
                 <div className="w-full h-full flex flex-col justify-end">
                     <div className="hidden md:flex md:items-center md:justify-center w-full h-full">
                         <Timeline entries={eventEntries.entries} />
+                        <RAGChat />
                     </div>
                 </div>
             </div>

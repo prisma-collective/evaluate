@@ -194,8 +194,8 @@ const Timeline: React.FC<TimelineProps> = ({ entries }) => {
                 onMouseLeave={handleMouseLeave}
                 cx={pos.x}
                 cy={pos.y}
-                r={hoverEntry === entry ? "5" : "3"}
-                className="fill-slate-500 hover:fill-prisma-a cursor-pointer transition-all duration-300 opacity-60 group-hover:opacity-100"
+                r={hoverEntry === entry ? "6" : "4"}
+                className="fill-slate-300 hover:fill-prisma-a cursor-pointer transition-all duration-300 opacity-60 group-hover:opacity-100"
               />
               <text
                 x={pos.x}
