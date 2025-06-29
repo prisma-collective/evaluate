@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from 'next/font/google';
 import "./styles/globals.css";
 import Navbar from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/react";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -27,8 +28,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prisma Events Registration",
-    description: "Register for Prisma Events",
+    title: "Prisma Events Evaluation",
+    description: "Evaluate an Action-learning Journey",
     images: ["https://evaluate.prisma.events/sm_banner.png"],
   },
 };
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body className={`${spaceGrotesk.className}`}>
         <Navbar />
         {children}
+        <Analytics />
       </body>
     </html>
   );
